@@ -1,23 +1,42 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace Grammaton
 {
 	using System;
 	using System.Collections.Generic;
+	using static Grammaton.Utils.Utils;
 
 	public interface IConsumer
 	{
 		bool HasName { get; }
 		string Name { get; }
+		bool Consume(string input);
+		bool ConsumeAll(string input);
 		bool Consume(string input, out string consumed, out string output);
 		void As(string name);
 	}
 
-	public class ConsumerBase
+	public abstract class ConsumerBase : IConsumer
 	{
 		public bool HasName => this.Name != null;
 
 		public string Name { get; private set; }
+
+		public bool Consume(string input)
+		{
+			string consumed, output;
+			return this.Consume(input, out consumed, out output);
+		}
+
+		public bool ConsumeAll(string input)
+		{
+			string consumed, output;
+			var result = this.Consume(input, out consumed, out output);
+			return result && output == string.Empty;
+		}
+
+		public abstract bool Consume(string input, out string consumed, out string output);
 
 		public void As(string name)
 		{
@@ -25,7 +44,7 @@ namespace Grammaton
 		}
 	}
 
-	public class TerminalConsumer : ConsumerBase, IConsumer
+	public class TerminalConsumer : ConsumerBase
 	{
 		private readonly string terminal;
 		private readonly bool ignoreCase;
@@ -36,7 +55,7 @@ namespace Grammaton
 			this.ignoreCase = ignoreCase;
 		}
 
-		public bool Consume(string input, out string consumed, out string output)
+		public override bool Consume(string input, out string consumed, out string output)
 		{
 			var comparison = this.ignoreCase
 				? StringComparison.OrdinalIgnoreCase
@@ -57,7 +76,7 @@ namespace Grammaton
 		}
 	}
 
-	public class AnyConsumer : ConsumerBase, IConsumer
+	public class AnyConsumer : ConsumerBase
 	{
 		private readonly List<IConsumer> consumers;
 
@@ -67,7 +86,7 @@ namespace Grammaton
 			this.consumers.AddRange(consumers);
 		}
 
-		public bool Consume(string input, out string consumed, out string output)
+		public override bool Consume(string input, out string consumed, out string output)
 		{
 			foreach (var consumer in this.consumers)
 			{
@@ -83,7 +102,7 @@ namespace Grammaton
 		}
 	}
 
-	public class ManyConsumer : ConsumerBase, IConsumer
+	public class ManyConsumer : ConsumerBase
 	{
 		private readonly IConsumer consumer;
 		private readonly int? minimum;
@@ -96,7 +115,7 @@ namespace Grammaton
 			this.maximum = maximum;
 		}
 
-		public bool Consume(string input, out string consumed, out string output)
+		public override bool Consume(string input, out string consumed, out string output)
 		{
 			var count = 0;
 			var currentput = input;
@@ -129,7 +148,7 @@ namespace Grammaton
 		}
 	}
 
-	public class RegexConsumer : ConsumerBase, IConsumer
+	public class RegexConsumer : ConsumerBase
 	{
 		private readonly string pattern;
 
@@ -138,7 +157,7 @@ namespace Grammaton
 			this.pattern = "^" + pattern;
 		}
 
-		public bool Consume(string input, out string consumed, out string output)
+		public override bool Consume(string input, out string consumed, out string output)
 		{
 			var regex = new Regex(this.pattern);
 			var match = regex.Match(input);
@@ -153,6 +172,63 @@ namespace Grammaton
 			output = input;
 			consumed = null;
 			return false;
+		}
+	}
+
+	public class GroupConsumer : ConsumerBase
+	{
+		private readonly List<IConsumer> consumers;
+
+		public GroupConsumer(params IConsumer[] consumers)
+		{
+			this.consumers = new List<IConsumer>(consumers);
+		}
+
+		public override bool Consume(string input, out string consumed, out string output)
+		{
+			var currentput = input;
+			output = input;
+			consumed = "";
+
+			foreach (var consumer in this.consumers)
+			{
+				string consumerConsumed;
+				if (consumer.Consume(currentput, out consumerConsumed, out output))
+				{
+					currentput = output;
+					consumed += consumerConsumed;
+				}
+				else
+				{
+					output = input;
+					consumed = null;
+					return false;
+				}
+			}
+
+			return true;
+		}
+	}
+
+	public class OptionalConsumer : ConsumerBase
+	{
+		private readonly IConsumer consumer;
+
+		public OptionalConsumer(IConsumer consumer)
+		{
+			this.consumer = consumer;
+		}
+
+		public override bool Consume(string input, out string consumed, out string output)
+		{
+			if (this.consumer.Consume(input, out consumed, out output))
+			{
+				return true;
+			}
+
+			output = input;
+			consumed = null;
+			return true;
 		}
 	}
 
@@ -184,62 +260,51 @@ namespace Grammaton
 
 	class Program
 	{
-		static TerminalConsumer Terminal(string terminal)
-		{
-			return new TerminalConsumer(terminal);
-		}
-
-		static AnyConsumer Any(params IConsumer[] consumers)
-		{
-			return new AnyConsumer(consumers);
-		}
-
-		static ManyConsumer Many(IConsumer consumer, int? minimum = null, int? maximum = null)
-		{
-			return new ManyConsumer(consumer, minimum, maximum);
-		}
-
-		static RegexConsumer Regex(string terminal)
-		{
-			return new RegexConsumer(terminal);
-		}
-
-
 		static void Main(string[] args)
 		{
-			var testRule = new Rule(Terminal("test"));
-			var a = testRule.Test("test");
+			Func<IConsumer, IConsumer, IConsumer> separatedListConsumerBuilder = (consumer, separator) =>
+				Group(consumer, Many(Group(separator, consumer)));
 
-			testRule = new Rule(Any(Terminal("test"), Terminal("foo")));
-			var c = testRule.Test("test");
-			var b = testRule.Test("foo");
+			var identifierConsumer = Group(Regex("[_a-zA-Z]"), Many(Regex("[_a-zA-Z0-9]")));
+			var whitespaceConsumer = Many(Any(Terminal(" "), Terminal("\t")));
 
-			testRule = new Rule(
-				Many(Terminal("test")),
-				Terminal("foo"));
-			var d = testRule.Test("testtestfoo");
+			var argConsumer = separatedListConsumerBuilder(
+				identifierConsumer,
+				Group(Terminal(","), Optional(whitespaceConsumer)));
 
-			testRule = new Rule(
-				Many(Any(Terminal("foo"), Terminal("bar"))),
-				Terminal("qux"));
-			var e = testRule.Test("foofoobarfoobarfoobarbarqux");
+			var argumentsConsumer = Group(
+				Optional(whitespaceConsumer),
+				identifierConsumer,
+				Many(Group(Terminal(","), Optional(whitespaceConsumer), identifierConsumer)),
+				Optional(whitespaceConsumer));
 
-			testRule = new Rule(
-				Regex(@"\d\daaa"));
-			var f = testRule.Test("12axa");
-			var g = testRule.Test("12aaa");
-
-			var functionCall = new Rule(
-				Regex(""),
+			var functionCallConsumer = Group(
+				identifierConsumer,
+				Optional(whitespaceConsumer),
 				Terminal("("),
-				Regex(""),
-				Many(Regex(",\s?
+				Optional(argumentsConsumer),
+				Terminal(")"),
+				Optional(whitespaceConsumer),
+				Terminal(";"));
 
-			var rule = new Rule(
-				Terminal("hello"),
-				Terminal(" "),
+			var a = functionCallConsumer.Consume("foo(test, bar);");
+			var b = functionCallConsumer.Consume("foo();");
+			var c = functionCallConsumer.Consume("foo ( test	);");
+
+			var rule = Group(
+				As("greeting", Any(
+					Terminal("hello"),
+					Terminal("bye"))),
+				Many(
+					minimum: 1,
+					consumer: Any(
+						Terminal(" "),
+						Terminal("\t"))),
 				Terminal("world"),
-				Any(Terminal("!"), Terminal("?")));
+				As("punctuation", Many(
+					Any(
+						Terminal("!"),
+						Terminal("?")))));
 		}
 	}
 }
