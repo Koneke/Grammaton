@@ -5,8 +5,7 @@ c:\users\lukas.hagman\home\misc\Grammaton\Grammaton\obj\Debug\Grammaton.csprojRe
 c:\users\lukas.hagman\home\misc\Grammaton\Grammaton\obj\Debug\Grammaton.exe
 c:\users\lukas.hagman\home\misc\Grammaton\Grammaton\obj\Debug\Grammaton.pdb
 C:\Users\Lukas\git\grammaton\Grammaton\bin\Debug\Grammaton.exe.config
-C:\Users\Lukas\git\grammaton\Grammaton\obj\Debug\Grammaton.exe
-C:\Users\Lukas\git\grammaton\Grammaton\obj\Debug\Grammaton.pdb
 C:\Users\Lukas\git\grammaton\Grammaton\bin\Debug\Grammaton.exe
 C:\Users\Lukas\git\grammaton\Grammaton\bin\Debug\Grammaton.pdb
-C:\Users\Lukas\git\grammaton\Grammaton\obj\Debug\Grammaton.csprojResolveAssemblyReference.cache
+C:\Users\Lukas\git\grammaton\Grammaton\obj\Debug\Grammaton.exe
+C:\Users\Lukas\git\grammaton\Grammaton\obj\Debug\Grammaton.pdb
