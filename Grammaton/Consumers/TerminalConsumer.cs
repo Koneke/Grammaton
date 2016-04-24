@@ -13,8 +13,12 @@ namespace Grammaton
 			this.ignoreCase = ignoreCase;
 		}
 
-		public override bool Consume(string input, out string consumed, out string output)
-		{
+		public override Capture Consume(
+			Capture baseCapture,
+			string input,
+			out string consumed,
+			out string output
+		) {
 			var comparison = this.ignoreCase
 				? StringComparison.OrdinalIgnoreCase
 				: StringComparison.Ordinal;
@@ -25,12 +29,13 @@ namespace Grammaton
 				output = input.Substring(
 					this.terminal.Length,
 					input.Length - this.terminal.Length);
-				return true;
+				var capture = new Capture(consumed).Name(this.Name);
+				return capture;
 			}
 
 			output = input;
 			consumed = null;
-			return false;
+			return null;
 		}
 	}
 }

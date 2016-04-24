@@ -17,9 +17,13 @@
 			this.name = name;
 		}
 
-		public override bool Consume(string input, out string consumed, out string output)
-		{
-			return consumers[this.name].Consume(input, out consumed, out output);
+		public override Capture Consume(
+			Capture baseCapture,
+			string input,
+			out string consumed,
+			out string output
+		) {
+			return consumers[this.name].Consume(baseCapture, input, out consumed, out output);
 		}
 	}
 }

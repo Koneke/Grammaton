@@ -12,19 +12,28 @@ namespace Grammaton
 			this.consumers.AddRange(consumers);
 		}
 
-		public override bool Consume(string input, out string consumed, out string output)
-		{
+		public override Capture Consume(
+			Capture baseCapture,
+			string input,
+			out string consumed,
+			out string output
+		) {
 			foreach (var consumer in this.consumers)
 			{
-				if (consumer.Consume(input, out consumed, out output))
-				{
-					return true;
-				}
+				var childCapture = consumer.Consume(baseCapture, input, out consumed, out output);
+
+				var capture = this.HasName
+					? new Capture().Name(this.Name)
+					: baseCapture;
+
+				capture.AddChild(childCapture);
+
+				return capture;
 			}
 
 			output = input;
 			consumed = null;
-			return false;
+			return null;
 		}
 	}
 }

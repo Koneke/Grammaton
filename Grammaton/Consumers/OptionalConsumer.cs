@@ -9,16 +9,25 @@ namespace Grammaton
 			this.consumer = consumer;
 		}
 
-		public override bool Consume(string input, out string consumed, out string output)
-		{
-			if (this.consumer.Consume(input, out consumed, out output))
+		public override Capture Consume(
+			Capture baseCapture,
+			string input,
+			out string consumed,
+			out string output
+		) {
+			var capture = this.HasName
+				? baseCapture.AddChild(new Capture().Name(this.Name))
+				: baseCapture;
+			var childCapture = this.consumer.Consume(capture, input, out consumed, out output);
+
+			if (childCapture != null)
 			{
-				return true;
+				capture.AddChild(childCapture);
 			}
 
 			output = input;
 			consumed = null;
-			return true;
+			return capture;
 		}
 	}
 }

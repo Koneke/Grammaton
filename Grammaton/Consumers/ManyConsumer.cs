@@ -1,5 +1,7 @@
 namespace Grammaton
 {
+	using System.Collections.Generic;
+
 	public class ManyConsumer : ConsumerBase
 	{
 		private readonly IConsumer consumer;
@@ -13,21 +15,36 @@ namespace Grammaton
 			this.maximum = maximum;
 		}
 
-		public override bool Consume(string input, out string consumed, out string output)
-		{
+		public override Capture Consume(
+			Capture baseCapture,
+			string input,
+			out string consumed,
+			out string output
+		) {
 			var count = 0;
 			var currentput = input;
 			output = input;
 			consumed = "";
 
+			var capture = this.SpawnIfWanted(baseCapture);
+			var childCaptures = new List<Capture>();
+
 			while (!this.maximum.HasValue || count < this.maximum)
 			{
 				string consumerConsumed;
-				if (this.consumer.Consume(currentput, out consumerConsumed, out output))
+				var childCapture = this.consumer.Consume(capture, currentput, out consumerConsumed, out output);
+
+				if (childCapture != null)
 				{
 					currentput = output;
 					consumed += consumerConsumed;
 					count++;
+
+					// if it doesn't have a name, it has already propagated the catch.
+					if (childCapture.HasName)
+					{
+						childCaptures.Add(childCapture);
+					}
 				}
 				else
 				{
@@ -39,10 +56,15 @@ namespace Grammaton
 			{
 				consumed = null;
 				output = input;
-				return false;
+				return null;
 			}
 
-			return true;
+			foreach (var childCapture in childCaptures)
+			{
+				capture.AddChild(childCapture);
+			}
+
+			return capture;
 		}
 	}
 }

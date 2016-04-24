@@ -18,7 +18,14 @@
 			foreach (var consumer in this.consumers)
 			{
 				string consumed;
-				if (!consumer.Consume(currentput, out consumed, out currentput))
+				var capture = consumer.Consume(
+					new Capture().Name("root"),
+					currentput,
+					out consumed,
+					out currentput
+				);
+
+				if (capture == null)
 				{
 					return false;
 				}

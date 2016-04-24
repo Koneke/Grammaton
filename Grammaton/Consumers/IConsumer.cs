@@ -4,9 +4,9 @@ namespace Grammaton
 	{
 		bool HasName { get; }
 		string Name { get; }
-		bool Consume(string input);
-		bool ConsumeAll(string input);
-		bool Consume(string input, out string consumed, out string output);
-		void As(string name);
+		Capture Consume(Capture baseCapture, string input);
+		Capture ConsumeAll(Capture baseCapture, string input);
+		Capture Consume(Capture baseCapture, string input, out string consumed, out string output);
+		IConsumer As(string name);
 	}
 }
