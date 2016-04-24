@@ -1,18 +1,20 @@
 ﻿namespace Grammaton
 {
+	using System.Collections.Generic;
+
 	public abstract class ConsumerBase : IConsumer
 	{
 		public bool HasName => this.Name != null;
 
 		public string Name { get; private set; }
 
-		public Capture Consume(Capture baseCapture, string input)
+		public ConsumeResult Consume(Capture baseCapture, string input)
 		{
 			string consumed, output;
 			return this.Consume(baseCapture, input, out consumed, out output);
 		}
 
-		public Capture ConsumeAll(Capture baseCapture, string input)
+		public ConsumeResult ConsumeAll(Capture baseCapture, string input)
 		{
 			string consumed, output;
 			var result = this.Consume(baseCapture, input, out consumed, out output);
@@ -25,7 +27,11 @@
 			return result;
 		}
 
-		public abstract Capture Consume(Capture baseCapture, string input, out string consumed, out string output);
+		public abstract ConsumeResult Consume(
+			Capture baseCapture,
+			string input,
+			out string consumed,
+			out string output);
 
 		public IConsumer As(string name)
 		{
@@ -48,6 +54,37 @@
 			}
 
 			return capture;
+		}
+
+		public ConsumeResult CreateResult(bool success, List<Capture> childCaptures)
+		{
+			if (!success)
+			{
+				return new ConsumeResult(false);
+			}
+
+			var result = new ConsumeResult(true);
+
+			if (this.HasName)
+			{
+				var cap = new Capture().Name(this.Name);
+
+				foreach (var childCapture in childCaptures)
+				{
+					cap.AddChild(childCapture);
+				}
+
+				result.AddCapture(cap);
+			}
+			else
+			{
+				foreach (var childCapture in childCaptures)
+				{
+					result.AddCapture(childCapture);
+				}
+			}
+
+			return result;
 		}
 	}
 }

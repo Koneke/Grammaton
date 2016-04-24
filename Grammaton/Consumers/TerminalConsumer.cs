@@ -13,7 +13,7 @@ namespace Grammaton
 			this.ignoreCase = ignoreCase;
 		}
 
-		public override Capture Consume(
+		public override ConsumeResult Consume(
 			Capture baseCapture,
 			string input,
 			out string consumed,
@@ -29,13 +29,20 @@ namespace Grammaton
 				output = input.Substring(
 					this.terminal.Length,
 					input.Length - this.terminal.Length);
-				var capture = new Capture(consumed).Name(this.Name);
-				return capture;
+
+				var result = new ConsumeResult(true);
+
+				if (this.HasName)
+				{
+					result.AddCapture(new Capture(consumed).Name(this.Name));
+				}
+
+				return result;
 			}
 
 			output = input;
 			consumed = null;
-			return null;
+			return new ConsumeResult(false);
 		}
 	}
 }

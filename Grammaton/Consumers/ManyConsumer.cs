@@ -15,7 +15,7 @@ namespace Grammaton
 			this.maximum = maximum;
 		}
 
-		public override Capture Consume(
+		public override ConsumeResult Consume(
 			Capture baseCapture,
 			string input,
 			out string consumed,
@@ -32,19 +32,15 @@ namespace Grammaton
 			while (!this.maximum.HasValue || count < this.maximum)
 			{
 				string consumerConsumed;
-				var childCapture = this.consumer.Consume(capture, currentput, out consumerConsumed, out output);
+				var childResult = this.consumer.Consume(capture, currentput, out consumerConsumed, out output);
 
-				if (childCapture != null)
+				if (childResult.Success)
 				{
 					currentput = output;
 					consumed += consumerConsumed;
 					count++;
 
-					// if it doesn't have a name, it has already propagated the catch.
-					if (childCapture.HasName)
-					{
-						childCaptures.Add(childCapture);
-					}
+					childCaptures.AddRange(childResult.Captures);
 				}
 				else
 				{
@@ -56,15 +52,10 @@ namespace Grammaton
 			{
 				consumed = null;
 				output = input;
-				return null;
+				return new ConsumeResult(false);
 			}
 
-			foreach (var childCapture in childCaptures)
-			{
-				capture.AddChild(childCapture);
-			}
-
-			return capture;
+			return this.CreateResult(true, childCaptures);
 		}
 	}
 }

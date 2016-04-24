@@ -11,7 +11,7 @@ namespace Grammaton
 			this.consumers = new List<IConsumer>(consumers);
 		}
 
-		public override Capture Consume(
+		public override ConsumeResult Consume(
 			Capture baseCapture,
 			string input,
 			out string consumed,
@@ -27,40 +27,24 @@ namespace Grammaton
 			foreach (var consumer in this.consumers)
 			{
 				string consumerConsumed;
-				var childCapture = consumer.Consume(capture, currentput, out consumerConsumed, out output);
+				var childResult = consumer.Consume(capture, currentput, out consumerConsumed, out output);
 
-				if (childCapture != null)
+				if (childResult.Success)
 				{
 					currentput = output;
 					consumed += consumerConsumed;
 
-					// if it doesn't have a name, it has already propagated the catch.
-					if (childCapture != Capture.Empty && childCapture.HasName)
-					{
-						childCaptures.Add(childCapture);
-					}
+					childCaptures.AddRange(childResult.Captures);
 				}
 				else
 				{
 					output = input;
 					consumed = null;
-					return null;
+					return new ConsumeResult(false);
 				}
 			}
 
-			foreach (var childCapture in childCaptures)
-			{
-				capture.AddChild(childCapture);
-			}
-
-			// if we're not named, we're not going to return any meaningful capture,
-			// but we don't want to return null because that means that we failed to consume.
-			// so we give Capture.Empty.
-			// this is not entirely beautiful, we'll have to think about this a bit.
-			// maybe return some kind of result object, which'd contain our capture if we got one.
-			return this.HasName
-				? capture
-				: Capture.Empty;
+			return this.CreateResult(true, childCaptures);
 		}
 	}
 }

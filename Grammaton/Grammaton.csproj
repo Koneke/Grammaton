@@ -62,6 +62,7 @@
     <Compile Include="Consumers\AnyConsumer.cs" />
     <Compile Include="Collection.cs" />
     <Compile Include="Consumers\ConsumerBase.cs" />
+    <Compile Include="Consumers\ConsumeResult.cs" />
     <Compile Include="Consumers\GroupConsumer.cs" />
     <Compile Include="Consumers\IConsumer.cs" />
     <Compile Include="Consumers\ManyConsumer.cs" />
