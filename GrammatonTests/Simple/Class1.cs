@@ -41,7 +41,7 @@
 		{
 			const string test = "test";
 			var consumer = Terminal(test);
-			Assert.False(consumer.ConsumeAll(MakeRoot(), test + " too much").Success);
+			Assert.Throws<System.Exception>(() => consumer.ConsumeAll(MakeRoot(), test + " too much"));
 		}
 	}
 
@@ -88,8 +88,8 @@
 			const string first = "first";
 			const string second = "second";
 			var consumer = Any(Terminal(first), Terminal(second));
-			Assert.False(consumer.ConsumeAll(MakeRoot(), first + " too much").Success);
-			Assert.False(consumer.ConsumeAll(MakeRoot(), second + " too much").Success);
+			Assert.Throws<System.Exception>(() => consumer.ConsumeAll(MakeRoot(), first + " too much").Success);
+			Assert.Throws<System.Exception>(() => consumer.ConsumeAll(MakeRoot(), second + " too much").Success);
 		}
 	}
 
@@ -189,7 +189,7 @@
 			const string first = "first";
 			const string second = "second";
 			var consumer = Group(Terminal(first), Terminal(second));
-			Assert.False(consumer.ConsumeAll(MakeRoot(), first + second + first).Success);
+			Assert.Throws<System.Exception>(() => consumer.ConsumeAll(MakeRoot(), first + second + first).Success);
 		}
 	}
 
