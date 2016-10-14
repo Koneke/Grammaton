@@ -39,6 +39,16 @@
 			return this;
 		}
 
+		public Capture SpawnCapture(string consumed)
+		{
+			if (!this.HasName)
+			{
+				throw new System.Exception();
+			}
+
+			return new Capture(consumed).Name(this.Name);
+		}
+
 		public Capture SpawnIfWanted(Capture baseCapture)
 		{
 			Capture capture;

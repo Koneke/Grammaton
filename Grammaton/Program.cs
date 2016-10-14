@@ -7,7 +7,12 @@
 	{
 		static void Main(string[] args)
 		{
-			Func<IConsumer, IConsumer, IConsumer> separatedListConsumerBuilder = (consumer, separator) =>
+			var test = Any(Terminal("foo").As("foo-cap"), Terminal("bar"));
+			//var test = Any(Terminal("bar").As("bar-cap"));
+			var resfoo = test.ConsumeAll(new Capture().Name("root"), "foo");
+			var resbar = test.ConsumeAll(new Capture().Name("root"), "bar");
+
+			/*Func<IConsumer, IConsumer, IConsumer> separatedListConsumerBuilder = (consumer, separator) =>
 				Group(consumer, Many(Group(separator, consumer)));
 
 			var identifierConsumer = Group(
@@ -30,9 +35,7 @@
 				Many(
 					Group(
 						Terminal(" "),
-						val
-					)
-				),
+						val)),
 				Terminal(")")
 			);
 
@@ -52,7 +55,7 @@
 			var res = stmt.ConsumeAll(
 				new Capture().Name("root"),
 				"(for x (in foo) (do nothing))"
-			);
+			);*/
 
 			var a = 0;
 		}

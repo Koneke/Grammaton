@@ -12,7 +12,7 @@
 			return new AnyConsumer(consumers);
 		}
 
-		public static ManyConsumer Many(IConsumer consumer, int? minimum = null, int? maximum = null)
+		/*public static ManyConsumer Many(IConsumer consumer, int? minimum = null, int? maximum = null)
 		{
 			return new ManyConsumer(consumer, minimum, maximum);
 		}
@@ -30,7 +30,7 @@
 		public static OptionalConsumer Optional(IConsumer consumer)
 		{
 			return new OptionalConsumer(consumer);
-		}
+		}*/
 
 		public static T As<T>(string name, T consumer) where T : IConsumer
 		{

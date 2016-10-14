@@ -12,7 +12,7 @@ namespace Grammaton
 			this.consumers.AddRange(consumers);
 		}
 
-		public override Capture Consume(
+		public override ConsumeResult Consume(
 			Capture baseCapture,
 			string input,
 			out string consumed,
@@ -20,15 +20,24 @@ namespace Grammaton
 		) {
 			foreach (var consumer in this.consumers)
 			{
-				var childCapture = consumer.Consume(baseCapture, input, out consumed, out output);
+				var childResult = consumer.Consume(baseCapture, input, out consumed, out output);
+				if (!childResult.Success) continue;
+
+				var result = new ConsumeResult(true);
 
 				var capture = this.HasName
-					? new Capture().Name(this.Name)
+					? this.SpawnCapture(consumed).SetParent(baseCapture)
 					: baseCapture;
 
-				capture.AddChild(childCapture);
+				capture.AddChildren(childResult.Captures);
 
-				return capture;
+				var children = this.HasName
+					? new List<Capture> { capture }
+					: childResult.Captures;
+
+				result.AddCaptures(children);
+
+				return result;
 			}
 
 			output = input;

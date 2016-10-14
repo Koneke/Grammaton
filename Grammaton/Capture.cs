@@ -8,6 +8,8 @@
 
 		public bool HasName => !string.IsNullOrEmpty(this.captureName);
 
+		public Capture Parent;
+
 		private List<Capture> children;
 		private string captureName;
 		private string captured;
@@ -36,9 +38,27 @@
 			return this;
 		}
 
+		public Capture AddChildren(IEnumerable<Capture> childCaptures)
+		{
+			this.children.AddRange(childCaptures);
+			return this;
+		}
+
 		public override string ToString()
 		{
 			return $"{this.captureName}: {this.captured}";
+		}
+
+		public Capture SetConsumed(string consumed)
+		{
+			this.captured = consumed;
+			return this;
+		}
+
+		public Capture SetParent(Capture parent)
+		{
+			this.Parent = parent;
+			return this;
 		}
 	}
 }
