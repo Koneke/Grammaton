@@ -1,3 +1,4 @@
+*.suo
 *.cache
 *.manifest
-FileListAbsolute.txt
+*FileListAbsolute.txt
