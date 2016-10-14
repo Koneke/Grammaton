@@ -24,7 +24,6 @@ namespace Grammaton
 				if (!childResult.Success) continue;
 
 				var result = new ConsumeResult(true);
-
 				var capture = this.HasName
 					? this.SpawnCapture(consumed).SetParent(baseCapture)
 					: baseCapture;
@@ -42,7 +41,7 @@ namespace Grammaton
 
 			output = input;
 			consumed = null;
-			return null;
+			return new ConsumeResult(false);
 		}
 	}
 }

@@ -11,7 +11,7 @@ namespace Grammaton
 			this.pattern = "^" + pattern;
 		}
 
-		public override Capture Consume(
+		public override ConsumeResult Consume(
 			Capture baseCapture,
 			string input,
 			out string consumed,
@@ -23,13 +23,24 @@ namespace Grammaton
 			if (match.Success)
 			{
 				consumed = match.Value;
-				output = input.Substring(match.Length, input.Length - match.Length);
-				return new Capture(consumed).Name(this.Name);
+				output = input.Substring(
+					match.Length,
+					input.Length - match.Length);
+
+				var result = new ConsumeResult(true);
+
+				if (this.HasName)
+				{
+					result.AddCapture(new Capture(consumed).Name(this.Name));
+				}
+
+				return result;
+				//return new Capture(consumed).Name(this.Name);
 			}
 
 			output = input;
 			consumed = null;
-			return null;
+			return new ConsumeResult(false);
 		}
 	}
 }

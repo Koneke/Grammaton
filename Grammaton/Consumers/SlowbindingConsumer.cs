@@ -2,7 +2,7 @@
 {
 	using System.Collections.Generic;
 
-	class SlowbindingConsumer : ConsumerBase
+	public class SlowbindingConsumer : ConsumerBase
 	{
 		private static Dictionary<string, IConsumer> consumers = new Dictionary<string, IConsumer>();
 		private string name;
@@ -17,7 +17,7 @@
 			this.name = name;
 		}
 
-		public override Capture Consume(
+		public override ConsumeResult Consume(
 			Capture baseCapture,
 			string input,
 			out string consumed,

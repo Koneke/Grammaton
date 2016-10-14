@@ -63,8 +63,12 @@
     <Compile Include="Collection.cs" />
     <Compile Include="Consumers\ConsumerBase.cs" />
     <Compile Include="Consumers\ConsumeResult.cs" />
+    <Compile Include="Consumers\GroupConsumer.cs" />
     <Compile Include="Consumers\IConsumer.cs" />
     <Compile Include="Consumers\ManyConsumer.cs" />
+    <Compile Include="Consumers\OptionalConsumer.cs" />
+    <Compile Include="Consumers\RegexConsumer.cs" />
+    <Compile Include="Consumers\SlowbindingConsumer.cs" />
     <Compile Include="Consumers\TerminalConsumer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

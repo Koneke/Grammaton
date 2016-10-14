@@ -21,7 +21,9 @@ namespace Grammaton
 			output = input;
 			consumed = "";
 
-			var capture = this.SpawnIfWanted(baseCapture);
+			var capture = this.HasName
+				? this.SpawnCapture(consumed).SetParent(baseCapture)
+				: baseCapture;
 			var childCaptures = new List<Capture>();
 
 			foreach (var consumer in this.consumers)
@@ -44,7 +46,14 @@ namespace Grammaton
 				}
 			}
 
-			return this.CreateResult(true, childCaptures);
+			var result = new ConsumeResult(true);
+			var children = this.HasName
+				? new List<Capture> { capture }
+				: childCaptures;
+
+			result.AddCaptures(children);
+
+			return result;
 		}
 	}
 }

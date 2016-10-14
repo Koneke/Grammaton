@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Grammaton
 {
 	public class OptionalConsumer : ConsumerBase
@@ -9,25 +11,36 @@ namespace Grammaton
 			this.consumer = consumer;
 		}
 
-		public override Capture Consume(
+		public override ConsumeResult Consume(
 			Capture baseCapture,
 			string input,
 			out string consumed,
 			out string output
 		) {
-			var capture = this.HasName
-				? baseCapture.AddChild(new Capture().Name(this.Name))
-				: baseCapture;
-			var childCapture = this.consumer.Consume(capture, input, out consumed, out output);
+			var childResult = this.consumer.Consume(baseCapture, input, out consumed, out output);
 
-			if (childCapture != null)
+			var result = new ConsumeResult(true);
+			var capture = this.HasName
+				? this.SpawnCapture(consumed).SetParent(baseCapture)
+				: baseCapture;
+
+			if (childResult.Success)
 			{
-				capture.AddChild(childCapture);
+				capture.AddChildren(childResult.Captures);
+			}
+			else
+			{
+				output = input;
+				consumed = null;
 			}
 
-			output = input;
-			consumed = null;
-			return capture;
+			var children = this.HasName
+				? new List<Capture> { capture }
+				: childResult.Captures;
+
+			result.AddCaptures(children);
+
+			return result;
 		}
 	}
 }
