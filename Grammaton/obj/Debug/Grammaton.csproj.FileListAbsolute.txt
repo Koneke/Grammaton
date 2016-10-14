@@ -1,6 +1,0 @@
-c:\users\lukas.hagman\home\misc\Grammaton\Grammaton\bin\Debug\Grammaton.exe.config
-c:\users\lukas.hagman\home\misc\Grammaton\Grammaton\bin\Debug\Grammaton.exe
-c:\users\lukas.hagman\home\misc\Grammaton\Grammaton\bin\Debug\Grammaton.pdb
-c:\users\lukas.hagman\home\misc\Grammaton\Grammaton\obj\Debug\Grammaton.csprojResolveAssemblyReference.cache
-c:\users\lukas.hagman\home\misc\Grammaton\Grammaton\obj\Debug\Grammaton.exe
-c:\users\lukas.hagman\home\misc\Grammaton\Grammaton\obj\Debug\Grammaton.pdb
