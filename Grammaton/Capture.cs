@@ -6,58 +6,63 @@
 	{
 		public static Capture Empty = new Capture();
 
-		public bool HasName => !string.IsNullOrEmpty(this.captureName);
-
 		public Capture Parent;
 
-		private List<Capture> children;
-		private string captureName;
-		private string captured;
+		public bool HasName => !string.IsNullOrEmpty(this.Name);
+		public string Name;
+
+		public List<Capture> Children;
+		public string Captured;
 		private string capture => null;
 
 		public Capture()
 		{
-			this.children = new List<Capture>();
+			this.Children = new List<Capture>();
 		}
 
 		public Capture(string capture)
 			: this()
 		{
-			this.captured = capture;
+			this.Captured = capture;
 		}
 
-		public Capture Name(string name)
+		public Capture SetName(string name)
 		{
-			this.captureName = name;
+			this.Name = name;
 			return this;
 		}
 
 		public Capture AddChild(Capture childCapture)
 		{
-			this.children.Add(childCapture);
+			this.Children.Add(childCapture);
 			return this;
 		}
 
 		public Capture AddChildren(IEnumerable<Capture> childCaptures)
 		{
-			this.children.AddRange(childCaptures);
+			foreach (var capture in childCaptures)
+			{
+				this.AddChild(capture);
+			}
+
 			return this;
 		}
 
 		public override string ToString()
 		{
-			return $"{this.captureName}: {this.captured}";
+			return $"{this.Name}: {this.Captured}";
 		}
 
 		public Capture SetConsumed(string consumed)
 		{
-			this.captured = consumed;
+			this.Captured = consumed;
 			return this;
 		}
 
 		public Capture SetParent(Capture parent)
 		{
 			this.Parent = parent;
+			this.Parent.AddChild(this);
 			return this;
 		}
 	}

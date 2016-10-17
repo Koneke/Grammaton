@@ -31,11 +31,11 @@ namespace Grammaton
 
 				if (this.HasName)
 				{
-					result.AddCapture(new Capture(consumed).Name(this.Name));
+					var capture = new Capture(consumed).SetName(this.Name);
+					result.AddCapture(capture);
 				}
 
 				return result;
-				//return new Capture(consumed).Name(this.Name);
 			}
 
 			output = input;

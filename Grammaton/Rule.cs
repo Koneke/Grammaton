@@ -19,7 +19,7 @@
 			{
 				string consumed;
 				var capture = consumer.Consume(
-					new Capture().Name("root"),
+					new Capture().SetName("root"),
 					currentput,
 					out consumed,
 					out currentput

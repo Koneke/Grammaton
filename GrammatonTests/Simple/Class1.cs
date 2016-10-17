@@ -8,7 +8,7 @@
 	{
 		public Capture MakeRoot()
 		{
-			return new Capture().Name("root");
+			return new Capture().SetName("root");
 		}
 
 		[Fact]
@@ -49,7 +49,7 @@
 	{
 		public Capture MakeRoot()
 		{
-			return new Capture().Name("root");
+			return new Capture().SetName("root");
 		}
 
 		[Fact]
@@ -97,7 +97,7 @@
 	{
 		public Capture MakeRoot()
 		{
-			return new Capture().Name("root");
+			return new Capture().SetName("root");
 		}
 
 		[Fact]
@@ -150,7 +150,7 @@
 	{
 		public Capture MakeRoot()
 		{
-			return new Capture().Name("root");
+			return new Capture().SetName("root");
 		}
 
 		[Fact]
@@ -197,7 +197,7 @@
 	{
 		public Capture MakeRoot()
 		{
-			return new Capture().Name("root");
+			return new Capture().SetName("root");
 		}
 
 		[Fact]

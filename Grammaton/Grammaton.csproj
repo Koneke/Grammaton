@@ -72,6 +72,7 @@
     <Compile Include="Consumers\TerminalConsumer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Querier.cs" />
     <Compile Include="Rule.cs" />
     <Compile Include="Utils\Utils.cs" />
   </ItemGroup>

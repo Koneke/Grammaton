@@ -34,7 +34,9 @@ namespace Grammaton
 
 				if (this.HasName)
 				{
-					result.AddCapture(new Capture(consumed).Name(this.Name));
+					var capture = new Capture(consumed).SetName(this.Name);
+					result.AddCapture(capture);
+					baseCapture.AddChild(capture);
 				}
 
 				return result;

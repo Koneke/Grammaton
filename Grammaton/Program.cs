@@ -1,18 +1,31 @@
 ﻿namespace Grammaton
 {
 	using System;
+	using System.Collections.Generic;
+
 	using static Grammaton.Utils.Utils;
 
 	class Program
 	{
+		private static Capture MakeRoot()
+		{
+			return new Capture().SetName("root");
+		}
+
 		static void Main(string[] args)
 		{
-			var test = Group(
-				Regex("[bf]oo").As("b/foo-cap"),
-				Terminal("bar").As("bar-cap"));
+			var test = Many(
+				Regex("[bf]oo")
+					.As("bf"))
+				.As("bfs");
 
-			var resfoo = test.ConsumeAll(new Capture().Name("root"), "foobar");
-			var resbar = test.ConsumeAll(new Capture().Name("root"), "boobar");
+			Capture root;
+			List<string> q;
+			var querier = new Querier();
+
+			root = MakeRoot();
+			test.ConsumeAll(root, "booboofoo");
+			q = querier.Query("bfs/bf", root);
 
 			Func<IConsumer, IConsumer, IConsumer> separatedListConsumerBuilder = (consumer, separator) =>
 				Group(consumer, Many(Group(separator, consumer)));
@@ -40,7 +53,7 @@
 			SlowbindingConsumer.Register("stmt", stmt);
 
 			var res = stmt.ConsumeAll(
-				new Capture().Name("root"),
+				new Capture().SetName("root"),
 				"(for x (in foo) (do nothing))");
 
 			var a = 0;

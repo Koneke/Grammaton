@@ -46,7 +46,7 @@
 				throw new System.Exception();
 			}
 
-			return new Capture(consumed).Name(this.Name);
+			return new Capture(consumed).SetName(this.Name);
 		}
 
 		public Capture SpawnIfWanted(Capture baseCapture)
@@ -55,7 +55,7 @@
 
 			if (this.HasName)
 			{
-				capture = new Capture().Name(this.Name);
+				capture = new Capture().SetName(this.Name);
 				baseCapture?.AddChild(capture);
 			}
 			else
@@ -77,7 +77,7 @@
 
 			if (this.HasName)
 			{
-				var cap = new Capture().Name(this.Name);
+				var cap = new Capture().SetName(this.Name);
 
 				foreach (var childCapture in childCaptures)
 				{
